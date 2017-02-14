@@ -8,8 +8,7 @@ source /data_dirs.env
 cd /var/ossec
 for ossecdir in "${DATA_DIRS[@]}"; do
   mv ${ossecdir} ${ossecdir}-template
-  ln -s data/${ossecdir} ${ossecdir}
+  ln -s $(realpath --relative-to=$(dirname ${ossecdir}) data)/${ossecdir} ${ossecdir}
 done
 
 cd bin && ln -s ../data/process_list .process_list && cd ..
-

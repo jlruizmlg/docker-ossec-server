@@ -5,26 +5,15 @@ MAINTAINER Terence Kent <tkent@xetus.com>
 # Follow the server installation parameters specified on the OSSEC website for
 # ubuntu installations
 #
-RUN curl https://ossec.wazuh.com/repos/apt/conf/ossec-key.gpg.key -o ossec-key.gpg.key &&\
-  apt-key add ossec-key.gpg.key && rm -v ossec-key.gpg.key &&\
-  echo "deb http://ossec.wazuh.com/repos/apt/ubuntu trusty main" >> /etc/apt/sources.list &&\
-  apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -yf install expect ossec-hids \
-  ossec-hids=2.8.3-4trusty
+RUN curl curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH | apt-key add - &&\
+  echo "deb https://packages.wazuh.com/apt trusty main" >> /etc/apt/sources.list &&\
+  apt-get update && apt-get -yf install expect realpath wazuh-manager
 
-#
-# Add a default agent due to this bug
-# https://groups.google.com/forum/#!topic/ossec-list/qeC_h3EZCxQ
-#
-ADD default_agent /var/ossec/default_agent
-RUN service ossec restart &&\
-  /var/ossec/bin/manage_agents -f /default_agent &&\
-  rm /var/ossec/default_agent &&\
-  service ossec stop &&\
-  echo -n "" /var/ossec/logs/ossec.log
 
 #
 # Initialize the data volume configuration
 #
+
 ADD data_dirs.env /data_dirs.env
 ADD init.bash /init.bash
 # Sync calls are due to https://github.com/docker/docker/issues/9547
